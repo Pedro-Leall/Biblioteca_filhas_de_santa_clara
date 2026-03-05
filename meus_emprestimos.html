@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Empréstimos - Santa Clara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#F5F5DC] text-gray-800 font-sans min-h-screen">
+
+    <header class="bg-[#5C4033] text-white p-4 shadow-md">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Portal do Usuário</h1>
+            <nav class="space-x-4">
+                <span id="identificacao" class="text-sm text-[#F5F5DC] opacity-80 mr-4"></span>
+                <button onclick="location.href='painel.html'"
+                    class="hover:text-[#F5F5DC] font-semibold transition-colors">Voltar ao Acervo</button>
+                <button id="btnSair"
+                    class="bg-[#8B5A2B] px-3 py-1 rounded hover:bg-red-700 transition-colors ml-4">Sair</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto p-6 mt-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-2xl font-bold text-[#5C4033] mb-6">Meus Livros Alugados</h2>
+            <div id="gradeEmprestimos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <p class="text-gray-500 col-span-full">Buscando seus registros...</p>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const banco = supabase.createClient('https://wuzezgodtgumiznjcvaf.supabase.co', 'sb_publishable_f3BbG-BIzTdUJHrV9dQEyA_gBY-wQBH');
+
+        const sessao = JSON.parse(localStorage.getItem('sessaoBiblioteca'));
+        if (!sessao || sessao.status !== 'normal') location.href = 'index.html';
+
+        document.getElementById('identificacao').innerText = `Usuário: ${sessao.email}`;
+
+        async function carregarMeusEmprestimos() {
+            // A query agora busca também os itens em trânsito de devolução
+            const { data: meusItens } = await banco
+                .from('emprestimos')
+                .select('id_emprestimo, data_prevista_devolucao, status, livros(nome)')
+                .eq('id_usuario', sessao.id_usuario)
+                .in('status', ['Ativo', 'Renovado', 'Devolucao Pendente']);
+
+            const grade = document.getElementById('gradeEmprestimos');
+            grade.innerHTML = '';
+            const hoje = new Date().toISOString().split('T')[0];
+
+            if (!meusItens || meusItens.length === 0) {
+                grade.innerHTML = '<p class="text-gray-500 col-span-full">Você não possui livros pendentes.</p>';
+                return;
+            }
+
+            meusItens.forEach(item => {
+                const isPendente = item.status === 'Devolucao Pendente';
+                const emAtraso = item.data_prevista_devolucao < hoje && !isPendente;
+
+                const corBorda = isPendente ? 'border-yellow-500' : (emAtraso ? 'border-red-500' : 'border-[#8B5A2B]');
+                const corTextoData = emAtraso ? 'text-red-600 font-bold' : 'text-gray-700';
+                const dataBR = item.data_prevista_devolucao.split('-').reverse().join('/');
+
+                const btnRenovar = item.status === 'Renovado'
+                    ? `<span class="text-xs text-gray-400 block text-center mt-2">Limite atingido</span>`
+                    : `<button onclick="renovarPrazo(${item.id_emprestimo}, '${item.data_prevista_devolucao}')" class="w-full mt-2 bg-blue-600 text-white px-3 py-2 rounded text-sm hover:bg-blue-700 transition">Estender +15 Dias</button>`;
+
+                // Lógica de Renderização: Se o usuário clicou em devolver, bloqueia novas ações
+                const painelAcoes = isPendente
+                    ? `<div class="mt-4 pt-4 border-t border-gray-200 text-center"><span class="text-sm font-bold text-yellow-700 bg-yellow-100 border border-yellow-300 px-4 py-2 rounded block w-full">Aguardando Baixa do Admin</span></div>`
+                    : `<div class="mt-4 pt-4 border-t border-gray-200"><button onclick="solicitarDevolucao(${item.id_emprestimo})" class="w-full bg-green-600 text-white px-3 py-2 rounded text-sm hover:bg-green-700 transition font-semibold">Entregar Livro</button>${btnRenovar}</div>`;
+
+                grade.innerHTML += `
+                    <div class="border-t-4 ${corBorda} bg-gray-50 p-5 rounded shadow flex flex-col justify-between h-full">
+                        <div>
+                            <h3 class="font-bold text-lg text-[#5C4033] mb-2">${item.livros.nome}</h3>
+                            <p class="text-sm text-gray-600">Devolução para:</p>
+                            <p class="text-lg ${corTextoData}">${dataBR} ${emAtraso ? '(Atrasado)' : ''}</p>
+                        </div>
+                        ${painelAcoes}
+                    </div>`;
+            });
+        }
+
+        // Alteração central: Em vez de 'Devolvido', o status vai para a quarentena
+        async function solicitarDevolucao(id) {
+            const { error } = await banco.from('emprestimos').update({ status: 'Devolucao Pendente' }).eq('id_emprestimo', id);
+            if (!error) carregarMeusEmprestimos();
+        }
+
+        async function renovarPrazo(id, dataAtual) {
+            const d = new Date(dataAtual); d.setDate(d.getDate() + 15);
+            const { error } = await banco.from('emprestimos').update({ data_prevista_devolucao: d.toISOString().split('T')[0], status: 'Renovado' }).eq('id_emprestimo', id);
+            if (!error) carregarMeusEmprestimos();
+        }
+
+        document.getElementById('btnSair').addEventListener('click', () => {
+            localStorage.removeItem('sessaoBiblioteca');
+            location.href = 'index.html';
+        });
+
+        document.addEventListener('DOMContentLoaded', carregarMeusEmprestimos);
+    </script>
+</body>
+
+</html>

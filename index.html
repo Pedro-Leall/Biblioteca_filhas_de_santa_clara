@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acesso - Biblioteca Filhas de Santa Clara</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-[#F5F5DC] h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md border-t-4 border-[#5C4033] relative overflow-hidden">
+
+        <div id="boxLogin" class="transition-transform duration-300">
+            <div class="text-center mb-6">
+                <h1 class="text-3xl font-bold text-[#5C4033]">Biblioteca</h1>
+                <p class="text-[#8B5A2B] text-lg mt-1">Acesso ao Sistema</p>
+            </div>
+            <form id="formAcesso" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700">E-mail</label>
+                    <input type="email" id="email" required
+                        class="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                </div>
+                <div>
+                    <label class="block text-gray-700">Senha</label>
+                    <input type="password" id="senha" required
+                        class="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                </div>
+                <p id="msgErroLogin" class="text-red-500 text-sm text-center hidden">Credenciais não encontradas.</p>
+                <button type="submit"
+                    class="w-full py-3 bg-[#5C4033] text-white rounded hover:bg-[#3e2b22] mt-2">Entrar</button>
+                <div class="text-center mt-4">
+                    <button type="button" id="btnIrCadastro" class="text-[#8B5A2B] hover:underline">Primeiro acesso?
+                        Crie sua conta</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="boxCadastro" class="hidden transition-transform duration-300">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-bold text-[#5C4033]">Nova Conta</h1>
+                <p class="text-gray-500 text-sm mt-1">Preencha seus dados para acesso normal.</p>
+            </div>
+            <form id="formNovoUser" class="space-y-4">
+                <div>
+                    <label class="block text-gray-700">E-mail</label>
+                    <input type="email" id="novoEmail" required
+                        class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                </div>
+                <div>
+                    <label class="block text-gray-700">Criar Senha</label>
+                    <input type="password" id="novaSenha" required
+                        class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                </div>
+                <p id="msgErroCadastro" class="text-red-500 text-sm text-center hidden">E-mail indisponível ou falha
+                    técnica.</p>
+                <button type="submit" class="w-full py-3 bg-[#8B5A2B] text-white rounded hover:bg-[#5C4033]">Finalizar
+                    Cadastro</button>
+                <button type="button" id="btnVoltarLogin"
+                    class="w-full py-2 mt-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Voltar</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const urlProjeto = 'https://wuzezgodtgumiznjcvaf.supabase.co';
+        const chavePublica = 'sb_publishable_f3BbG-BIzTdUJHrV9dQEyA_gBY-wQBH';
+        const banco = supabase.createClient(urlProjeto, chavePublica);
+
+        const boxLogin = document.getElementById('boxLogin');
+        const boxCadastro = document.getElementById('boxCadastro');
+
+        document.getElementById('btnIrCadastro').addEventListener('click', () => {
+            boxLogin.classList.add('hidden');
+            boxCadastro.classList.remove('hidden');
+        });
+
+        document.getElementById('btnVoltarLogin').addEventListener('click', () => {
+            boxCadastro.classList.add('hidden');
+            boxLogin.classList.remove('hidden');
+        });
+
+        document.getElementById('formAcesso').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            document.getElementById('msgErroLogin').classList.add('hidden');
+
+            const { data: usuario } = await banco.from('usuarios').select('*')
+                .eq('email', document.getElementById('email').value)
+                .eq('senha', document.getElementById('senha').value);
+
+            if (usuario && usuario.length > 0) {
+                localStorage.setItem('sessaoBiblioteca', JSON.stringify(usuario[0]));
+                location.href = 'painel.html';
+            } else {
+                document.getElementById('msgErroLogin').classList.remove('hidden');
+            }
+        });
+
+        document.getElementById('formNovoUser').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            document.getElementById('msgErroCadastro').classList.add('hidden');
+
+            const { error } = await banco.from('usuarios').insert([{
+                email: document.getElementById('novoEmail').value,
+                senha: document.getElementById('novaSenha').value,
+                status: 'normal'
+            }]);
+
+            if (!error) {
+                this.reset();
+                document.getElementById('btnVoltarLogin').click();
+            } else {
+                document.getElementById('msgErroCadastro').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>
