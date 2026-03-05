@@ -4,65 +4,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acesso - Biblioteca Filhas de Santa Clara</title>
+    <title>Acesso - Biblioteca Santa Clara</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        .bg-fundo-personalizado {
+            background-image: url('img/santaclara.png');
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .text-monastic {
+            color: #5C4033;
+        }
+
+        .bg-monastic {
+            background-color: #5C4033;
+        }
+
+        .text-oldgold {
+            color: #000000;
+        }
+
+        .focus-monastic:focus {
+            outline: none;
+            border-color: #8B5A2B;
+            box-shadow: 0 0 0 3px rgba(139, 90, 43, 0.1);
+        }
+
+        .hover-lift {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(92, 64, 51, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.98);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-fade {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+    </style>
 </head>
 
-<body class="bg-[#F5F5DC] h-screen flex items-center justify-center p-4">
+<body class="bg-fundo-personalizado text-gray-800 font-sans min-h-screen flex items-center justify-center p-4">
 
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md border-t-4 border-[#5C4033] relative overflow-hidden">
+    <div
+        class="bg-[#F5F5DC]/30 backdrop-blur-md rounded-lg shadow-xl w-full max-w-lg border-t-4 border-[#5C4033] p-10 animate-fade border border-white/40">
 
-        <div id="boxLogin" class="transition-transform duration-300">
-            <div class="text-center mb-6">
-                <h1 class="text-3xl font-bold text-[#5C4033]">Biblioteca</h1>
-                <p class="text-[#8B5A2B] text-lg mt-1">Acesso ao Sistema</p>
+        <div id="boxLogin" class="w-full flex flex-col">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-monastic">Acesso ao Sistema</h2>
+                <p class="text-gray-600 mt-1">Preencha suas credenciais.</p>
             </div>
-            <form id="formAcesso" class="space-y-4">
+            <form id="formAcesso" class="space-y-5">
                 <div>
-                    <label class="block text-gray-700">E-mail</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">E-mail</label>
                     <input type="email" id="email" required
-                        class="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus-monastic transition-colors">
                 </div>
-                <div>
-                    <label class="block text-gray-700">Senha</label>
+                <div class="relative">
+                    <label class="block text-gray-700 text-sm font-bold mb-1">Senha</label>
                     <input type="password" id="senha" required
-                        class="w-full px-4 py-3 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus-monastic transition-colors">
+                    <button type="button" onclick="toggleSenha('senha')"
+                        class="absolute right-3 bottom-3 text-gray-400 hover:text-oldgold transition-colors">
+                        <span class="material-symbols-outlined align-middle">visibility</span>
+                    </button>
                 </div>
                 <p id="msgErroLogin" class="text-red-500 text-sm text-center hidden">Credenciais não encontradas.</p>
                 <button type="submit"
-                    class="w-full py-3 bg-[#5C4033] text-white rounded hover:bg-[#3e2b22] mt-2">Entrar</button>
-                <div class="text-center mt-4">
-                    <button type="button" id="btnIrCadastro" class="text-[#8B5A2B] hover:underline">Primeiro acesso?
-                        Crie sua conta</button>
+                    class="w-full py-3.5 bg-monastic text-white rounded-lg hover-lift font-bold uppercase tracking-wider shadow-sm">Entrar</button>
+                <div class="text-center mt-5">
+                    <button type="button" id="btnIrCadastro"
+                        class="text-oldgold hover:underline text-sm font-medium transition-colors">Primeiro acesso? Crie
+                        sua conta</button>
                 </div>
             </form>
         </div>
 
-        <div id="boxCadastro" class="hidden transition-transform duration-300">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-bold text-[#5C4033]">Nova Conta</h1>
-                <p class="text-gray-500 text-sm mt-1">Preencha seus dados para acesso normal.</p>
+        <div id="boxCadastro" class="w-full hidden flex-col animate-fade">
+            <div class="mb-8 text-center">
+                <h2 class="text-3xl font-bold text-monastic">Nova Conta</h2>
+                <p class="text-gray-600 mt-1">Nível de acesso normal.</p>
             </div>
-            <form id="formNovoUser" class="space-y-4">
+            <form id="formNovoUser" class="space-y-5">
                 <div>
-                    <label class="block text-gray-700">E-mail</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-1">E-mail</label>
                     <input type="email" id="novoEmail" required
-                        class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus-monastic transition-colors">
                 </div>
-                <div>
-                    <label class="block text-gray-700">Criar Senha</label>
+                <div class="relative">
+                    <label class="block text-gray-700 text-sm font-bold mb-1">Criar Senha</label>
                     <input type="password" id="novaSenha" required
-                        class="w-full px-4 py-2 border rounded focus:ring-2 focus:ring-[#8B5A2B]">
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg focus-monastic transition-colors">
+                    <button type="button" onclick="toggleSenha('novaSenha')"
+                        class="absolute right-3 bottom-3 text-gray-400 hover:text-oldgold transition-colors">
+                        <span class="material-symbols-outlined align-middle">visibility</span>
+                    </button>
                 </div>
-                <p id="msgErroCadastro" class="text-red-500 text-sm text-center hidden">E-mail indisponível ou falha
-                    técnica.</p>
-                <button type="submit" class="w-full py-3 bg-[#8B5A2B] text-white rounded hover:bg-[#5C4033]">Finalizar
+                <p id="msgErroCadastro" class="text-red-500 text-sm text-center hidden">E-mail indisponível.</p>
+                <button type="submit"
+                    class="w-full py-3.5 bg-monastic text-white rounded-lg hover-lift font-bold uppercase tracking-wider shadow-sm">Finalizar
                     Cadastro</button>
-                <button type="button" id="btnVoltarLogin"
-                    class="w-full py-2 mt-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Voltar</button>
+                <div class="text-center mt-5">
+                    <button type="button" id="btnVoltarLogin"
+                        class="text-oldgold hover:underline text-sm font-medium transition-colors">Voltar ao
+                        Login</button>
+                </div>
             </form>
         </div>
+
     </div>
 
     <script>
@@ -73,24 +141,22 @@
         const boxLogin = document.getElementById('boxLogin');
         const boxCadastro = document.getElementById('boxCadastro');
 
-        document.getElementById('btnIrCadastro').addEventListener('click', () => {
-            boxLogin.classList.add('hidden');
-            boxCadastro.classList.remove('hidden');
-        });
+        function showCadastro() { boxLogin.classList.add('hidden'); boxLogin.classList.remove('flex'); boxCadastro.classList.remove('hidden'); boxCadastro.classList.add('flex'); }
+        function showLogin() { boxCadastro.classList.add('hidden'); boxCadastro.classList.remove('flex'); boxLogin.classList.remove('hidden'); boxLogin.classList.add('flex'); }
 
-        document.getElementById('btnVoltarLogin').addEventListener('click', () => {
-            boxCadastro.classList.add('hidden');
-            boxLogin.classList.remove('hidden');
-        });
+        document.getElementById('btnIrCadastro').addEventListener('click', showCadastro);
+        document.getElementById('btnVoltarLogin').addEventListener('click', showLogin);
+
+        function toggleSenha(idInput) {
+            const input = document.getElementById(idInput);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
 
         document.getElementById('formAcesso').addEventListener('submit', async function (e) {
             e.preventDefault();
-            document.getElementById('msgErroLogin').classList.add('hidden');
-
             const { data: usuario } = await banco.from('usuarios').select('*')
                 .eq('email', document.getElementById('email').value)
                 .eq('senha', document.getElementById('senha').value);
-
             if (usuario && usuario.length > 0) {
                 localStorage.setItem('sessaoBiblioteca', JSON.stringify(usuario[0]));
                 location.href = 'painel.html';
@@ -101,20 +167,12 @@
 
         document.getElementById('formNovoUser').addEventListener('submit', async function (e) {
             e.preventDefault();
-            document.getElementById('msgErroCadastro').classList.add('hidden');
-
             const { error } = await banco.from('usuarios').insert([{
                 email: document.getElementById('novoEmail').value,
                 senha: document.getElementById('novaSenha').value,
                 status: 'normal'
             }]);
-
-            if (!error) {
-                this.reset();
-                document.getElementById('btnVoltarLogin').click();
-            } else {
-                document.getElementById('msgErroCadastro').classList.remove('hidden');
-            }
+            if (!error) { this.reset(); showLogin(); } else { document.getElementById('msgErroCadastro').classList.remove('hidden'); }
         });
     </script>
 </body>
