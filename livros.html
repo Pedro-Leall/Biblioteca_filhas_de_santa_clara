@@ -23,29 +23,38 @@
         <h1 class="text-3xl font-bold text-[#5C4033] mb-6">Gestão de Livros</h1>
         </div>
 
-    <script>
+<script>
         const urlProjeto = 'https://wuzezgodtgumiznjcvaf.supabase.co';
         const chavePublica = 'sb_publishable_f3BbG-BIzTdUJHrV9dQEyA_gBY-wQBH';
         const banco = supabase.createClient(urlProjeto, chavePublica);
 
-        // VALIDAÇÃO DE SEGURANÇA ROBUSTA
-        const verificarSessao = () => {
-            const sessao = localStorage.getItem('sessaoBiblioteca');
-            if (!sessao) {
-                console.error("Sessão não encontrada. Redirecionando...");
-                location.href = 'index.html';
-                return null;
-            }
-            return JSON.parse(sessao);
-        };
-
-        const usuarioLogado = verificarSessao();
-        
-        // Se a função acima não retornou nulo, o script prossegue
-        if (usuarioLogado) {
-            console.log("Usuário autenticado:", usuarioLogado.email);
-            // Inicie o carregamento dos livros aqui...
+        // 1. Validação de segurança
+        const sessao = localStorage.getItem('sessaoBiblioteca');
+        if (!sessao) {
+            console.log("Sem sessão, voltando ao início.");
+            location.href = 'index.html';
         }
+
+        // 2. Função de carregamento com tratamento de erro
+        async function carregarLivros() {
+            try {
+                console.log("Buscando livros...");
+                const { data, error } = await banco.from('livros').select('*');
+                
+                if (error) throw error;
+                
+                console.log("Livros encontrados:", data);
+                // Aqui você adicionaria o código que cria a tabela na tela
+                
+            } catch (err) {
+                console.error("Erro ao buscar livros no banco:", err.message);
+                alert("Erro ao carregar dados: " + err.message);
+            }
+        }
+
+        // Executar após o carregamento da página
+        carregarLivros();
     </script>
 </body>
 </html>
+
