@@ -8,6 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         .bg-fundo-personalizado {
+            /* Caminho relativo: Sem a barra inicial */
             background-image: url('img/santaclara.png');
             background-position: center;
             background-repeat: no-repeat;
@@ -25,13 +26,14 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="border-b border-[#5C4033]/20">
-                            <th class="p-3 text-[#5C4033]">ID</th>
-                            <th class="p-3 text-[#5C4033]">Nome do Livro</th>
+                        <tr class="border-b border-[#5C4033]/20 text-[#5C4033]">
+                            <th class="p-3">ID</th>
+                            <th class="p-3">Nome do Livro</th>
                         </tr>
                     </thead>
-                    <tbody id="lista-livros" class="text-gray-800">
-                        </tbody>
+                    <tbody id="lista-livros" class="text-gray-800 bg-white/50">
+                        <tr><td colspan="2" class="p-4 text-center">Carregando...</td></tr>
+                    </tbody>
                 </table>
             </div>
         </div>
@@ -41,31 +43,36 @@
         const banco = supabase.createClient('https://wuzezgodtgumiznjcvaf.supabase.co', 'sb_publishable_f3BbG-BIzTdUJHrV9dQEyA_gBY-wQBH');
 
         async function carregarLivros() {
-            const { data, error } = await banco.from('livros').select('*');
-            
-            if (error) {
-                console.error("Erro Supabase:", error);
-                return;
-            }
-
             const tbody = document.getElementById('lista-livros');
-            tbody.innerHTML = ''; 
+            
+            try {
+                const { data, error } = await banco.from('livros').select('*');
+                
+                if (error) throw error;
 
-            if (data && data.length > 0) {
-                data.forEach(livro => {
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td class="p-3 border-b border-[#5C4033]/10">${livro.id_livro}</td>
-                        <td class="p-3 border-b border-[#5C4033]/10">${livro.nome}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } else {
-                tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center">Nenhum livro encontrado.</td></tr>';
+                tbody.innerHTML = ''; // Limpa o "Carregando..."
+
+                if (data && data.length > 0) {
+                    data.forEach(livro => {
+                        const tr = document.createElement('tr');
+                        tr.className = "border-b border-[#5C4033]/10";
+                        tr.innerHTML = `
+                            <td class="p-3">${livro.id_livro}</td>
+                            <td class="p-3">${livro.nome}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center">Nenhum livro encontrado.</td></tr>';
+                }
+            } catch (err) {
+                console.error("Erro:", err);
+                tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-red-600">Erro ao carregar dados.</td></tr>';
             }
         }
 
-        carregarLivros();
+        // Executa após o DOM carregar
+        document.addEventListener('DOMContentLoaded', carregarLivros);
     </script>
 </body>
 </html>
