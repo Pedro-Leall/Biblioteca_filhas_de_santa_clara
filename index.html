@@ -19,11 +19,16 @@
         </form>
     </div>
     <script>
-        const banco = supabase.createClient('URL', 'KEY');
+        const banco = supabase.createClient('https://wuzezgodtgumiznjcvaf.supabase.co', 'sb_publishable_f3BbG-BIzTdUJHrV9dQEyA_gBY-wQBH');
         document.getElementById('formAcesso').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const { data } = await banco.from('usuarios').select('*').eq('email', document.getElementById('email').value).eq('senha', document.getElementById('senha').value);
-            if (data?.length) { localStorage.setItem('sessaoBiblioteca', JSON.stringify(data[0])); location.href = 'painel.html'; }
+            const { data } = await banco.from('usuarios').select('*')
+                .eq('email', document.getElementById('email').value)
+                .eq('senha', document.getElementById('senha').value);
+            if (data?.length) { 
+                localStorage.setItem('sessaoBiblioteca', JSON.stringify(data[0])); 
+                location.href = 'painel.html'; 
+            }
         });
     </script>
 </body>
