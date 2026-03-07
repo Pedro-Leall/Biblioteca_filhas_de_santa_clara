@@ -1,322 +1,79 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel - Biblioteca Filhas de Santa Clara</title>
+    <title>Painel - Biblioteca Santa Clara</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #2A0303; color: #2A0303; }
+        .bg-moderno { background-color: #B29595; }
+        .text-moderno { color: #2A0303; }
+    </style>
 </head>
+<body class="min-h-screen">
 
-<body class="bg-[#F5F5DC] text-gray-800 font-sans min-h-screen relative">
-
-    <header class="bg-[#5C4033] text-white p-4 shadow-md">
+    <header class="bg-[#2A0303] text-[#B29595] p-4 border-b border-[#B29595]/30">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Biblioteca Santa Clara</h1>
             <nav class="space-x-4">
-                <span id="identificacaoUsuario" class="text-sm text-[#F5F5DC] opacity-80 mr-4"></span>
-                <button id="btnNavegarLivros"
-                    class="hover:text-[#F5F5DC] transition-colors font-semibold border-b-2 border-transparent hover:border-white">Gestão
-                    de Livros</button>
-                <button id="btnGestaoEmprestimos"
-                    class="hover:text-[#F5F5DC] transition-colors font-semibold border-b-2 border-transparent hover:border-white">Movimentações</button>
-                <button id="btnAbrirUsuario"
-                    class="hover:text-[#F5F5DC] transition-colors font-semibold border-b-2 border-transparent hover:border-white">Usuários</button>
-                <button id="btnSair"
-                    class="bg-[#8B5A2B] px-3 py-1 rounded hover:bg-red-700 transition-colors ml-4">Sair</button>
+                <span id="identificacaoUsuario" class="text-sm opacity-80"></span>
+                <button id="btnSair" class="bg-[#8B5A2B] px-3 py-1 rounded hover:bg-red-700 transition-colors">Sair</button>
             </nav>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-6 mt-6">
-        <div id="areaCards" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-[#8B5A2B]">
-                <h2 class="text-lg font-semibold text-gray-600">Acervo Total</h2>
-                <p id="contadorAcervo" class="text-3xl font-bold text-[#5C4033] mt-2">0</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-blue-500">
-                <h2 class="text-lg font-semibold text-gray-600">Empréstimos Ativos</h2>
-                <p id="contadorEmprestimos" class="text-3xl font-bold text-blue-600 mt-2">0</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow border-l-4 border-red-500">
-                <h2 class="text-lg font-semibold text-gray-600">Atrasos Notificados</h2>
-                <p id="contadorAtrasos" class="text-3xl font-bold text-red-600 mt-2">0</p>
-            </div>
+    <main class="max-w-6xl mx-auto p-6 space-y-8">
+        
+        <div class="bg-moderno p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-bold text-[#2A0303] mb-4">Monitoramento de Prazos</h2>
+            <div id="areaNotificacoes" class="text-sm text-[#2A0303]/80"></div>
         </div>
 
-        <div class="bg-white p-6 rounded-lg shadow mb-8">
+        <div class="bg-moderno p-6 rounded-xl shadow-lg">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-[#5C4033]">Catálogo de Livros</h2>
-                <input type="text" id="buscaLivro" placeholder="Pesquisar obra pelo nome..."
-                    class="w-full max-w-sm px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] bg-gray-50">
+                <h2 class="text-xl font-bold text-[#2A0303]">Catálogo de Livros</h2>
+                <input type="text" id="buscaLivro" placeholder="Pesquisar..." class="px-4 py-2 rounded-full bg-[#2A0303]/10 border border-[#2A0303]/20">
             </div>
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-[#F5F5DC] text-[#5C4033]">
-                            <th class="p-3 border-b-2 border-[#8B5A2B]">Título</th>
-                            <th class="p-3 border-b-2 border-[#8B5A2B]">Autor</th>
-                            <th class="p-3 border-b-2 border-[#8B5A2B]">Localização</th>
-                            <th id="colunaAcao" class="p-3 border-b-2 border-[#8B5A2B] text-center w-32">Ação</th>
-                        </tr>
-                    </thead>
-                    <tbody id="listaLivros" class="text-gray-700"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="bg-white p-6 rounded-lg shadow">
-            <h2 class="text-xl font-bold text-[#5C4033] mb-4">Monitoramento de Prazos</h2>
-            <div id="areaNotificacoes" class="border-t border-gray-200 pt-4 text-center text-sm text-gray-500"></div>
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="text-[#2A0303]/70 border-b border-[#2A0303]/20">
+                        <th class="p-3">Título</th>
+                        <th class="p-3">Autor</th>
+                        <th class="p-3">Localização</th>
+                    </tr>
+                </thead>
+                <tbody id="listaLivros" class="text-[#2A0303]"></tbody>
+            </table>
         </div>
     </main>
-
-    <div id="modalUsuario" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div
-            class="bg-white p-8 rounded-lg shadow-xl w-full max-w-3xl border-t-4 border-purple-600 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-purple-700">Gestão de Usuários</h2>
-                <button id="btnToggleFormUsuario" type="button"
-                    class="bg-purple-600 text-white px-3 py-1 rounded text-sm hover:bg-purple-700 transition-colors">Cadastrar
-                    Novo</button>
-            </div>
-
-            <div class="overflow-x-auto mb-6">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="bg-purple-50 text-purple-800">
-                            <th class="p-3 border-b-2 border-purple-200">Login (E-mail) / Nível</th>
-                            <th class="p-3 border-b-2 border-purple-200">Senha</th>
-                            <th class="p-3 border-b-2 border-purple-200 text-center">Livros Alugados</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabelaUsuariosList" class="text-gray-700"></tbody>
-                </table>
-            </div>
-
-            <form id="formUsuario" class="space-y-4 hidden border-t border-gray-200 pt-4 mt-2">
-                <h3 class="text-lg font-bold text-purple-600">Novo Acesso</h3>
-                <div class="grid grid-cols-2 gap-4">
-                    <div><label>E-mail</label><input type="email" id="emailUsuario" required class="w-full border p-2">
-                    </div>
-                    <div><label>Senha</label><input type="password" id="senhaUsuario" required
-                            class="w-full border p-2"></div>
-                </div>
-                <div>
-                    <label>Nível</label>
-                    <select id="statusUsuario" class="w-full border p-2">
-                        <option value="normal">Normal</option>
-                        <option value="adm">Administrador</option>
-                    </select>
-                </div>
-                <div class="flex justify-end mt-4">
-                    <button type="submit" class="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700">Salvar
-                        Acesso</button>
-                </div>
-            </form>
-
-            <div class="flex justify-end space-x-3 border-t border-gray-200 pt-4 mt-4">
-                <button type="button" onclick="document.getElementById('modalUsuario').classList.add('hidden')"
-                    class="px-4 py-2 bg-gray-300 rounded">Fechar Visualização</button>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const banco = supabase.createClient('https://wuzezgodtgumiznjcvaf.supabase.co', 'sb_publishable_f3BbG-BIzTdUJHrV9dQEyA_gBY-wQBH');
-
         const sessao = JSON.parse(localStorage.getItem('sessaoBiblioteca'));
+        
         if (!sessao) location.href = 'index.html';
+        document.getElementById('identificacaoUsuario').innerText = `Admin: ${sessao.email}`;
 
-        document.getElementById('identificacaoUsuario').innerText = `Logado como: ${sessao.email}`;
-
-        const btnGestao = document.getElementById('btnGestaoEmprestimos');
-
-        if (sessao.status === 'normal') {
-            document.getElementById('btnNavegarLivros').classList.add('hidden');
-            document.getElementById('btnAbrirUsuario').classList.add('hidden');
-            document.getElementById('colunaAcao').classList.remove('hidden');
-            btnGestao.innerText = 'Meus Empréstimos';
-            btnGestao.addEventListener('click', () => location.href = 'meus_emprestimos.html');
-        } else {
-            document.getElementById('colunaAcao').classList.add('hidden');
-            btnGestao.addEventListener('click', () => location.href = 'movimentacoes.html');
-        }
-
-        if (document.getElementById('btnNavegarLivros')) {
-            document.getElementById('btnNavegarLivros').addEventListener('click', () => location.href = 'livros.html');
-        }
-
-        document.getElementById('buscaLivro').addEventListener('input', function (e) {
-            const termo = e.target.value.toLowerCase();
-            document.querySelectorAll('#listaLivros tr').forEach(linha => {
-                const titulo = linha.querySelector('td').innerText.toLowerCase();
-                linha.style.display = titulo.includes(termo) ? '' : 'none';
-            });
-        });
-
-        function toggleSenha(idInput) {
-            const input = document.getElementById(idInput);
-            input.type = input.type === 'password' ? 'text' : 'password';
-        }
-
-        async function promoverAdmin(id_usuario) {
-            const { error } = await banco.from('usuarios').update({ status: 'adm' }).eq('id_usuario', id_usuario);
-            if (!error) carregarGestaoUsuarios();
-        }
-
-        async function carregarLivros() {
+        async function atualizarTudo() {
+            // Carregar Livros
             const { data: livros } = await banco.from('livros').select('*');
-            // Sincronizando com a Quarentena
-            const { data: ativos } = await banco.from('emprestimos').select('id_livro').in('status', ['Ativo', 'Renovado', 'Devolucao Pendente']);
+            const tbody = document.getElementById('listaLivros');
+            tbody.innerHTML = livros ? livros.map(l => `
+                <tr class="border-b border-[#2A0303]/10">
+                    <td class="p-3">${l.nome}</td>
+                    <td class="p-3">${l.autor || '-'}</td>
+                    <td class="p-3">${l.localizacao}</td>
+                </tr>`).join('') : '';
 
-            const contagem = {};
-            if (ativos) ativos.forEach(emp => contagem[emp.id_livro] = (contagem[emp.id_livro] || 0) + 1);
-
-            const corpo = document.getElementById('listaLivros');
-            corpo.innerHTML = '';
-
-            if (livros) {
-                livros.forEach(l => {
-                    const totalAlugados = contagem[l.id_livro] || 0;
-                    const esgotado = totalAlugados >= (l.n_exemplares || 1);
-                    let btnAcao = '<td class="hidden"></td>';
-
-                    if (sessao.status === 'normal') {
-                        if (esgotado) {
-                            btnAcao = `<td class="p-3 text-center"><span class="bg-gray-200 text-gray-500 px-3 py-1 rounded text-sm font-semibold w-full block cursor-not-allowed">Reservado</span></td>`;
-                        } else {
-                            btnAcao = `<td class="p-3 text-center"><button onclick="alugarRapido(${l.id_livro})" class="bg-[#8B5A2B] text-white px-3 py-1 rounded text-sm hover:bg-[#5C4033] w-full transition-colors">Alugar</button></td>`;
-                        }
-                    }
-
-                    corpo.innerHTML += `
-                        <tr class="border-b hover:bg-gray-50 transition-colors">
-                            <td class="p-3 font-medium">${l.nome}</td>
-                            <td class="p-3 text-sm">${l.autor || '-'}</td>
-                            <td class="p-3 text-sm">${l.localizacao}</td>
-                            ${btnAcao}
-                        </tr>`;
-                });
-            }
-        }
-
-        async function alugarRapido(id_livro) {
-            const { data: jaAlugado } = await banco.from('emprestimos').select('id_emprestimo').eq('id_livro', id_livro).eq('id_usuario', sessao.id_usuario).in('status', ['Ativo', 'Renovado', 'Devolucao Pendente']);
-            if (jaAlugado && jaAlugado.length > 0) return;
-
-            const { data: livro } = await banco.from('livros').select('n_exemplares').eq('id_livro', id_livro).single();
-            const { count: totalAlugados } = await banco.from('emprestimos').select('*', { count: 'exact', head: true }).eq('id_livro', id_livro).in('status', ['Ativo', 'Renovado', 'Devolucao Pendente']);
-
-            if (totalAlugados >= (livro.n_exemplares || 1)) return;
-
-            const d = new Date(); d.setDate(d.getDate() + 15);
-            const { error } = await banco.from('emprestimos').insert([{ id_usuario: sessao.id_usuario, id_livro: id_livro, data_prevista_devolucao: d.toISOString().split('T')[0] }]);
-
-            if (!error) atualizarTudo();
-        }
-
-        async function analisarEmprestimos() {
-            // Sincronizando a Análise Visível
-            let query = banco.from('emprestimos').select('id_emprestimo, data_prevista_devolucao, status, livros(nome), usuarios(email)').in('status', ['Ativo', 'Renovado', 'Devolucao Pendente']);
-            if (sessao.status === 'normal') query = query.eq('id_usuario', sessao.id_usuario);
-
-            const { data: emprestimos } = await query;
-            document.getElementById('contadorEmprestimos').innerText = emprestimos ? emprestimos.length : 0;
-
-            let totalAtrasos = 0;
-            const hoje = new Date().toISOString().split('T')[0];
+            // Carregar Notificações
+            const { data: emprestimos } = await banco.from('emprestimos').select('data_prevista_devolucao, livros(nome)').eq('status', 'Ativo');
             const area = document.getElementById('areaNotificacoes');
-            area.innerHTML = '';
-
-            if (emprestimos) {
-                emprestimos.forEach(emp => {
-                    const isPendente = emp.status === 'Devolucao Pendente';
-                    const emAtraso = emp.data_prevista_devolucao < hoje && !isPendente;
-                    if (emAtraso) totalAtrasos++;
-
-                    const corBg = isPendente ? 'bg-yellow-50 border-yellow-300' : (emAtraso ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200');
-                    const corTexto = isPendente ? 'text-yellow-700' : (emAtraso ? 'text-red-700' : 'text-green-700');
-                    const statusMsg = isPendente ? 'CONFERÊNCIA PENDENTE' : (emAtraso ? 'VENCEU EM' : 'Vence no dia');
-
-                    area.innerHTML += `
-                        <div class="flex justify-between items-center ${corBg} p-3 mb-2 rounded border text-left">
-                            <div><p class="font-bold ${corTexto}">${emp.livros.nome}</p><p class="text-xs text-gray-600">Usuário: ${emp.usuarios.email} | ${statusMsg}: ${emp.data_prevista_devolucao.split('-').reverse().join('/')}</p></div>
-                        </div>`;
-                });
-            }
-            document.getElementById('contadorAtrasos').innerText = totalAtrasos;
-            if (!emprestimos || emprestimos.length === 0) area.innerHTML = '<p>Nenhuma movimentação pendente.</p>';
+            area.innerHTML = emprestimos?.map(e => `<p class="mb-2"><b>${e.livros.nome}</b>: Vence em ${e.data_prevista_devolucao}</p>`).join('') || 'Nenhuma pendência.';
         }
 
-        async function carregarGestaoUsuarios() {
-            if (sessao.status !== 'adm') return;
-
-            const { data: usuarios } = await banco.from('usuarios').select('id_usuario, email, senha, status');
-            const { data: ativos } = await banco.from('emprestimos').select('id_usuario').in('status', ['Ativo', 'Renovado', 'Devolucao Pendente']);
-
-            const contagemUsu = {};
-            if (ativos) ativos.forEach(emp => contagemUsu[emp.id_usuario] = (contagemUsu[emp.id_usuario] || 0) + 1);
-
-            const tbody = document.getElementById('tabelaUsuariosList');
-            tbody.innerHTML = '';
-
-            if (usuarios) {
-                usuarios.forEach(u => {
-                    const qtd = contagemUsu[u.id_usuario] || 0;
-                    const idInput = `senha-view-${u.id_usuario}`;
-                    const corQtd = qtd > 0 ? 'text-blue-600' : 'text-gray-400';
-
-                    const controleAcesso = u.status === 'normal'
-                        ? `<button onclick="promoverAdmin(${u.id_usuario})" class="mt-1 bg-yellow-500 text-white px-2 py-1 rounded text-xs hover:bg-yellow-600 transition-colors shadow-sm" title="Tornar Administrador">Elevar a Admin</button>`
-                        : `<span class="mt-1 inline-block text-xs text-green-700 font-bold border border-green-200 bg-green-50 px-2 py-1 rounded uppercase">Admin</span>`;
-
-                    tbody.innerHTML += `
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-3">
-                                <span class="block font-medium">${u.email}</span>
-                                ${controleAcesso}
-                            </td>
-                            <td class="p-3 flex items-center space-x-2 mt-2">
-                                <input type="password" id="${idInput}" value="${u.senha}" class="bg-transparent border-none focus:outline-none focus:ring-0 text-gray-700 w-24 cursor-default" readonly>
-                                <button type="button" onclick="toggleSenha('${idInput}')" class="text-gray-500 hover:text-purple-600 text-lg transition-colors" title="Ver senha">👁️</button>
-                            </td>
-                            <td class="p-3 text-center font-bold ${corQtd}">${qtd}</td>
-                        </tr>
-                    `;
-                });
-            }
-        }
-
-        async function atualizarOutrosDados() {
-            const { count } = await banco.from('livros').select('*', { count: 'exact', head: true });
-            document.getElementById('contadorAcervo').innerText = count || 0;
-        }
-
-        function atualizarTudo() {
-            carregarLivros();
-            analisarEmprestimos();
-            carregarGestaoUsuarios();
-            atualizarOutrosDados();
-        }
-
-        document.getElementById('btnSair').addEventListener('click', () => {
-            localStorage.removeItem('sessaoBiblioteca');
-            location.href = 'index.html';
-        });
-
-        if (document.getElementById('btnAbrirUsuario')) document.getElementById('btnAbrirUsuario').addEventListener('click', () => document.getElementById('modalUsuario').classList.remove('hidden'));
-        document.getElementById('btnToggleFormUsuario').addEventListener('click', () => document.getElementById('formUsuario').classList.toggle('hidden'));
-
-        document.getElementById('formUsuario').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await banco.from('usuarios').insert([{ email: document.getElementById('emailUsuario').value, senha: document.getElementById('senhaUsuario').value, status: document.getElementById('statusUsuario').value }]);
-            e.target.reset(); document.getElementById('formUsuario').classList.add('hidden'); atualizarTudo();
-        });
-
+        document.getElementById('btnSair').onclick = () => { localStorage.removeItem('sessaoBiblioteca'); location.href = 'index.html'; };
         document.addEventListener('DOMContentLoaded', atualizarTudo);
     </script>
 </body>
-
 </html>
