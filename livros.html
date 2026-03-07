@@ -2,74 +2,43 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestão de Livros</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        .bg-fundo-personalizado {
-            /* Caminho relativo: remova a barra inicial se estiver na mesma pasta */
-            background-image: url('img/santaclara.png');
-            background-position: center;
-            background-repeat: no-repeat;
-            background-size: cover;
-            background-attachment: fixed;
-        }
+        .bg-fundo { background-image: url('img/santaclara.png'); background-size: cover; background-attachment: fixed; }
     </style>
 </head>
-<body class="bg-fundo-personalizado min-h-screen flex flex-col">
-
-    <main class="flex-grow p-6 w-full max-w-6xl mx-auto">
-        <div class="bg-[#F5F5DC]/65 backdrop-blur-md rounded-lg shadow-xl p-8 border border-white/40">
-            <h1 class="text-3xl font-bold text-[#5C4033] mb-6">Gestão de Livros</h1>
-            
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b border-[#5C4033]/20">
-                            <th class="p-3 text-[#5C4033]">ID</th>
-                            <th class="p-3 text-[#5C4033]">Nome do Livro</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lista-livros" class="text-gray-800">
-                        <tr><td colspan="2" class="p-4 text-center">Carregando...</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </main>
-
+<body class="bg-fundo min-h-screen p-6">
+    <div class="max-w-6xl mx-auto bg-[#F5F5DC]/65 backdrop-blur-md rounded-lg shadow-xl p-8 border border-white/40">
+        <h1 class="text-3xl font-bold text-[#5C4033] mb-6">Gestão de Livros</h1>
+        <table class="w-full text-left">
+            <thead>
+                <tr class="border-b border-[#5C4033]/20">
+                    <th class="p-3">ID</th>
+                    <th class="p-3">Nome do Livro</th>
+                </tr>
+            </thead>
+            <tbody id="lista-livros">
+                <tr><td colspan="2" class="p-4 text-center">Carregando...</td></tr>
+            </tbody>
+        </table>
+    </div>
     <script>
-        const banco = supabase.createClient('https://wuzezgodtgumiznjcvaf.supabase.co', 'sb_publishable_f3BbG-BIzTdUJHrV9dQEyA_gBY-wQBH');
-
+        const banco = supabase.createClient('SUA_URL_SUPABASE', 'SUA_KEY_SUPABASE');
         async function carregarLivros() {
+            const { data } = await banco.from('livros').select('*');
             const tbody = document.getElementById('lista-livros');
-            
-            try {
-                const { data, error } = await banco.from('livros').select('*');
-                
-                if (error) throw error;
-
-                tbody.innerHTML = ''; // Limpa o "Carregando..."
-
-                if (data && data.length > 0) {
-                    data.forEach(livro => {
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td class="p-3 border-b border-[#5C4033]/10">${livro.id_livro}</td>
-                            <td class="p-3 border-b border-[#5C4033]/10 font-medium">${livro.nome}</td>
-                        `;
-                        tbody.appendChild(tr);
-                    });
-                } else {
-                    tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center">Nenhum livro encontrado.</td></tr>';
-                }
-            } catch (err) {
-                console.error("Erro Supabase:", err);
-                tbody.innerHTML = '<tr><td colspan="2" class="p-4 text-center text-red-600">Erro ao carregar dados.</td></tr>';
+            tbody.innerHTML = '';
+            if (data) {
+                data.forEach(l => {
+                    tbody.innerHTML += `<tr class="border-b border-[#5C4033]/10">
+                        <td class="p-3">${l.id_livro}</td>
+                        <td class="p-3">${l.nome}</td>
+                    </tr>`;
+                });
             }
         }
-
         document.addEventListener('DOMContentLoaded', carregarLivros);
     </script>
 </body>
